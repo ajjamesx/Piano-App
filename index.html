@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Piano with Black Keys</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .piano {
+      position: relative;
+      display: flex;
+    }
+
+    .white-key, .black-key {
+      position: relative;
+      border: 1px solid #000;
+      cursor: pointer;
+      user-select: none;
+      font-family: sans-serif;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .white-key {
+      width: 60px;
+      height: 200px;
+      background: white;
+      z-index: 1;
+    }
+
+    .white-key:active {
+      background: #ccc;
+    }
+
+    .black-key {
+      width: 40px;
+      height: 120px;
+      background: black;
+      color: white;
+      position: absolute;
+      top: 0;
+      z-index: 2;
+    }
+
+    .black-key:active {
+      background: #444;
+    }
+
+    .black-A { left: 45px; }
+    .black-B { left: 105px; }
+    .black-D { left: 225px; }
+    .black-E { left: 285px; }
+    .black-G { left: 405px; }
+  </style>
+</head>
+<body>
+  <div class="piano">
+    <div class="white-key" data-note="261.63">C</div>
+    <div class="white-key" data-note="293.66">D</div>
+    <div class="white-key" data-note="329.63">E</div>
+    <div class="white-key" data-note="349.23">F</div>
+    <div class="white-key" data-note="392.00">G</div>
+    <div class="white-key" data-note="440.00">A</div>
+    <div class="white-key" data-note="493.88">B</div>
+
+    <!-- Black keys (placed on top, spaced manually) -->
+    <div class="black-key black-A" data-note="277.18">C#</div>
+    <div class="black-key black-B" data-note="311.13">D#</div>
+    <div class="black-key black-D" data-note="369.99">F#</div>
+    <div class="black-key black-E" data-note="415.30">G#</div>
+    <div class="black-key black-G" data-note="466.16">A#</div>
+  </div>
+
+  <script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    document.querySelectorAll('.white-key, .black-key').forEach(key => {
+      key.addEventListener('click', () => {
+        const freq = parseFloat(key.dataset.note);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      });
+    });
+  </script>
+</body>
+</html>
